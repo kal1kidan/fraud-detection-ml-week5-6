@@ -1,0 +1,23 @@
+# Ignore data files
+data/
+data/raw/
+data/processed/
+
+# Ignore model files
+models/
+
+# Ignore environment files
+.env
+.venv
+venv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
