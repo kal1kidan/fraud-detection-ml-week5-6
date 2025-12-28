@@ -1,132 +1,197 @@
-# Fraud Detection Project
+# 🏦 Fraud Detection Using Machine Learning
 
-## Overview
-This project focuses on detecting fraudulent transactions using two datasets:
-1. `Fraud_Data.csv` (E-commerce transactions)
-2. `creditcard.csv` (Credit card transactions)
+## 📌 Project Overview
 
-The goal is to clean, preprocess, and engineer features, then train machine learning models to detect fraud while handling class imbalance.
+This project builds an **end-to-end fraud detection pipeline** using real-world transactional datasets. The goal is to **identify fraudulent transactions** accurately while addressing challenges such as **class imbalance**, **feature engineering**, and **model interpretability**.
 
-## Project Structure
+Two datasets are used:
+
+1. **Fraud_Data.csv** – E-commerce transaction data
+2. **creditcard.csv** – Credit card transaction data (highly imbalanced)
+
+The project progresses through:
+
+* Data cleaning & preprocessing
+* Exploratory Data Analysis (EDA)
+* Feature engineering
+* Model training & evaluation (**Task 2 completed**)
+* Model explainability using SHAP (**Task 3 completed**)
+
+---
+
+## 📂 Project Structure
 
 ```
-
 fraud-detection/
-├── .vscode/
-│   └── settings.json
 ├── .github/
 │   └── workflows/
 │       └── unittests.yml
-├── data/                           # Added to .gitignore
+├── data/                           # Ignored from GitHub
 │   ├── raw/                        # Original datasets
-│   └── processed/                  # Cleaned and feature-engineered data
+│   └── processed/                  # Cleaned & feature-engineered data
 ├── notebooks/
 │   ├── eda-fraud-data.ipynb
 │   ├── eda-creditcard.ipynb
 │   ├── feature-engineering.ipynb
-│   ├── modeling.ipynb
-│   ├── shap-explainability.ipynb
+│   ├── modeling.ipynb              # ✅ Task 2: Model training & evaluation
+│   ├── shap-explainability.ipynb   # ✅ Task 3: SHAP analysis
 │   └── README.md
+├── models/
+│   └── random_forest_task3.pkl     # Saved trained model
 ├── src/
-│   └── **init**.py
+│   └── __init__.py
 ├── tests/
-│   └── **init**.py
-├── models/                          # Saved ML models
+│   └── __init__.py
 ├── scripts/
 │   └── README.md
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-
-```
-
-## Data Cleaning & Preprocessing
-
-- Removed duplicates and corrected data types.
-- Imputed missing values where necessary.
-- Converted IP addresses to integers for geolocation mapping.
-- Merged `Fraud_Data.csv` with `IpAddress_to_Country.csv` using a range-based lookup.
-
-## Feature Engineering
-
-- Created time-based features:
-  - `hour_of_day`
-  - `day_of_week`
-  - `time_since_signup` (purchase_time - signup_time)
-- Transaction velocity: number of transactions per user.
-- Categorical encoding: One-Hot Encoding for `device_id`, `browser`, `source`, `sex`, `country`.
-- Normalized numerical features using StandardScaler.
-
-## Class Imbalance Handling
-
-- Observed severe class imbalance (`fraud` << `non-fraud`).
-- Applied SMOTE (on training data only) to oversample minority class.
-- Documented class distributions before and after resampling.
-
-## Exploratory Data Analysis (EDA) Insights
-
-- Fraud patterns more prevalent in specific countries and peak hours.
-- High-value transactions are slightly more prone to fraud.
-- Transaction frequency per user varies, indicating potential velocity-based fraud signals.
-
-## Next Steps
-
-- Task 2: Build and evaluate models (Logistic Regression baseline, Random Forest ensemble) with stratified cross-validation.
-- Task 3: Model explainability using SHAP for actionable insights.
-
 ```
 
 ---
 
-## 2️⃣ Interim Report (Markdown for `reports/interim_task1.md`)
+## 🧹 Data Cleaning & Preprocessing
 
-```markdown
-# Interim Report 1 - Data Analysis and Preprocessing
-**Submission Date:** Sunday, 21 Dec, 2025
+* Removed duplicate records
+* Fixed inconsistent data types
+* Handled missing values using appropriate imputation strategies
+* Converted IP addresses to integer format
+* Merged `Fraud_Data.csv` with `IpAddress_to_Country.csv` using **range-based IP lookup**
 
-## 1. Datasets Overview
-- **Fraud_Data.csv**: E-commerce transaction records
-- **creditcard.csv**: Credit card transaction records
-- **IpAddress_to_Country.csv**: IP-to-country mapping
+---
 
-## 2. Data Cleaning
-- Handled missing values using imputation or row removal with justification.
-- Removed duplicate rows.
-- Corrected data types for timestamps, numeric fields, and categorical variables.
+## ⚙️ Feature Engineering
 
-## 3. Feature Engineering
-- **Time-based features**
-  - `hour_of_day`, `day_of_week`
-  - `time_since_signup`: calculated as purchase_time - signup_time
-- **Transaction velocity**
-  - `transactions_per_user`: count of transactions per user
-- **IP Geolocation**
-  - Converted IP addresses to integers
-  - Merged with `IpAddress_to_Country.csv` using range-based lookup
-  - Created `country_mapped` for each transaction
-- One-Hot Encoded categorical features: `device_id`, `browser`, `source`, `sex`, `country_mapped`
-- Scaled numerical features using StandardScaler
+### Engineered Features
 
-## 4. Exploratory Data Analysis (EDA)
-- Univariate analysis: distributions of purchase_value, user age, transaction frequency
-- Bivariate analysis: relationships between features and target
-- Visualized class distribution:
-  - Severe imbalance between `fraud` and `non-fraud` transactions
-- Fraud hotspots by country and hour of day identified
+* **Time-based features**
 
-## 5. Class Imbalance Strategy
-- Applied SMOTE oversampling on training data to balance classes.
-- Verified distribution post-resampling.
-- Justification: Preserves majority class information while giving minority class adequate representation.
+  * `hour_of_day`
+  * `day_of_week`
+  * `time_since_signup` (purchase_time − signup_time)
+* **Behavioral features**
 
-## 6. Key Insights
-- Fraudulent transactions tend to cluster in specific countries.
-- High-frequency users occasionally contribute to suspicious transactions.
-- Timing patterns (`hour_of_day`, `day_of_week`) influence fraud likelihood.
-- Model-ready datasets created for Task 2 modeling.
+  * `transactions_per_user`
+* **IP-based features**
 
-## 7. Next Steps
-- Task 2: Train models (Logistic Regression baseline, Random Forest/XGBoost ensemble).
-- Task 3: Explain model predictions using SHAP and provide actionable business insights.
+  * `ip_address`
+  * `lower_bound_ip_address`
+  * `upper_bound_ip_address`
+* **Categorical Encoding**
+
+  * One-Hot Encoding for `browser`, `source`, `sex`, `country`
+* **Scaling**
+
+  * StandardScaler applied to numerical features (when required)
+
+---
+
+## 📊 Exploratory Data Analysis (EDA) Highlights
+
+* Fraud is more likely to occur:
+
+  * Shortly after user signup
+  * From specific IP ranges
+  * During unusual hours and days
+* High-frequency user behavior can signal suspicious activity
+* Severe class imbalance observed across datasets
+
+---
+
+## ⚖️ Class Imbalance Handling
+
+* Fraud class represents a very small fraction of total transactions
+* Applied **SMOTE** on training data only
+* Maintained original distribution in test set for realistic evaluation
+
+---
+
+## 🤖 Modeling & Evaluation (✅ Task 2 Completed)
+
+### Models Trained
+
+* **Logistic Regression** (baseline)
+* **Random Forest Classifier** (final model)
+
+### Evaluation Metrics
+
+* F1-Score
+* Precision-Recall AUC
+* Confusion Matrix
+* Classification Report
+
+### Final Model Performance (Random Forest)
+
+* Strong fraud detection capability
+* Balanced trade-off between false positives and false negatives
+* Selected due to superior performance and robustness
+
+The trained model is saved in:
+
 ```
+models/random_forest_task3.pkl
+```
+
+---
+
+## 🔍 Model Explainability (Task 3)
+
+* Used **SHAP (SHapley Additive exPlanations)** for interpretability
+* Generated:
+
+  * Global feature importance plots
+  * Local explanations for individual predictions
+* Identified top fraud drivers:
+
+  * `time_since_signup`
+  * `ip_address`
+  * IP range features
+  * Temporal patterns (`day_of_week`, `hour_of_day`)
+
+---
+
+## 📈 Key Insights
+
+* Fraud often occurs immediately after signup
+* IP address patterns are strong fraud indicators
+* Temporal behavior significantly influences fraud likelihood
+* Model decisions are interpretable and aligned with business logic
+
+---
+
+## 💡 Business Recommendations
+
+1. **Additional verification for new accounts**
+
+   * Transactions within the first hour after signup should trigger review
+
+2. **IP-based risk scoring**
+
+   * Monitor and flag suspicious IP ranges
+
+3. **Time-based monitoring**
+
+   * Increase scrutiny during unusual hours or days
+
+---
+
+## 🛠️ Environment Setup
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## ✅ Submission Note (Interim & Task 2)
+
+This repository demonstrates:
+
+* Completed data preprocessing & EDA (**Interim-1**)
+* Successful model training and evaluation (**Task 2**)
+* Model explainability with SHAP (**Task 3**)
+
+📎 **GitHub Repository Link:**
+👉 *(https://github.com/kal1kidan/fraud-detection-ml-week5-6)*
 
