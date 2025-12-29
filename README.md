@@ -1,25 +1,36 @@
 # 🏦 Fraud Detection Using Machine Learning
 
-## 📌 Project Overview
-
-This project builds an **end-to-end fraud detection pipeline** using real-world transactional datasets. The goal is to **identify fraudulent transactions** accurately while addressing challenges such as **class imbalance**, **feature engineering**, and **model interpretability**.
-
-Two datasets are used:
-
-1. **Fraud_Data.csv** – E-commerce transaction data
-2. **creditcard.csv** – Credit card transaction data (highly imbalanced)
-
-The project progresses through:
-
-* Data cleaning & preprocessing
-* Exploratory Data Analysis (EDA)
-* Feature engineering
-* Model training & evaluation (**Task 2 completed**)
-* Model explainability using SHAP (**Task 3 completed**)
+**Final Project Submission — December 2025**
 
 ---
 
-## 📂 Project Structure
+## 📌 Project Overview
+
+This project presents a **complete end-to-end fraud detection system** built using real-world transaction data. It covers the full data science lifecycle — from **data ingestion and cleaning** to **feature engineering, model training, evaluation, and explainability**.
+
+The objective is to **accurately identify fraudulent transactions** while addressing real-world challenges such as **severe class imbalance**, **high-dimensional features**, and **model interpretability for business decisions**.
+
+---
+
+## 📂 Datasets Used
+
+1. **Fraud_Data.csv**
+
+   * E-commerce transaction data
+2. **creditcard.csv**
+
+   * Credit card transaction dataset (highly imbalanced)
+3. **IpAddress_to_Country.csv**
+
+   * IP address range to country mapping
+
+> **Note:** Raw data files are excluded from the repository and must be placed in the `data/raw/` directory.
+
+---
+
+## 📁 Repository Structure
+
+All code and artifacts are organized into **logical, clearly defined folders**:
 
 ```
 fraud-detection/
@@ -27,14 +38,14 @@ fraud-detection/
 │   └── workflows/
 │       └── unittests.yml
 ├── data/                           # Ignored from GitHub
-│   ├── raw/                        # Original datasets
+│   ├── raw/                        # Original datasets (user-provided)
 │   └── processed/                  # Cleaned & feature-engineered data
 ├── notebooks/
 │   ├── eda-fraud-data.ipynb
 │   ├── eda-creditcard.ipynb
 │   ├── feature-engineering.ipynb
-│   ├── modeling.ipynb              # ✅ Task 2: Model training & evaluation
-│   ├── shap-explainability.ipynb   # ✅ Task 3: SHAP analysis
+│   ├── modeling.ipynb              # Model training & evaluation
+│   ├── shap-explainability.ipynb   # Model explainability
 │   └── README.md
 ├── models/
 │   └── random_forest_task3.pkl     # Saved trained model
@@ -44,8 +55,8 @@ fraud-detection/
 │   └── __init__.py
 ├── scripts/
 │   └── README.md
-├── requirements.txt
-├── README.md
+├── requirements.txt                # Environment dependencies
+├── README.md                       # Project documentation
 └── .gitignore
 ```
 
@@ -56,8 +67,8 @@ fraud-detection/
 * Removed duplicate records
 * Fixed inconsistent data types
 * Handled missing values using appropriate imputation strategies
-* Converted IP addresses to integer format
-* Merged `Fraud_Data.csv` with `IpAddress_to_Country.csv` using **range-based IP lookup**
+* Converted IP addresses to integers
+* Merged transaction data with IP-to-country mapping using **range-based lookup**
 
 ---
 
@@ -69,7 +80,7 @@ fraud-detection/
 
   * `hour_of_day`
   * `day_of_week`
-  * `time_since_signup` (purchase_time − signup_time)
+  * `time_since_signup`
 * **Behavioral features**
 
   * `transactions_per_user`
@@ -78,41 +89,43 @@ fraud-detection/
   * `ip_address`
   * `lower_bound_ip_address`
   * `upper_bound_ip_address`
-* **Categorical Encoding**
+* **Categorical encoding**
 
   * One-Hot Encoding for `browser`, `source`, `sex`, `country`
-* **Scaling**
+* **Numerical scaling**
 
-  * StandardScaler applied to numerical features (when required)
+  * StandardScaler applied where required
 
 ---
 
-## 📊 Exploratory Data Analysis (EDA) Highlights
+## 📊 Exploratory Data Analysis (EDA)
 
-* Fraud is more likely to occur:
+Key insights uncovered during analysis:
+
+* Fraud occurs more frequently:
 
   * Shortly after user signup
-  * From specific IP ranges
   * During unusual hours and days
-* High-frequency user behavior can signal suspicious activity
-* Severe class imbalance observed across datasets
+  * From specific IP ranges
+* High transaction velocity is a strong fraud signal
+* Severe class imbalance confirmed across datasets
 
 ---
 
-## ⚖️ Class Imbalance Handling
+## ⚖️ Class Imbalance Strategy
 
-* Fraud class represents a very small fraction of total transactions
-* Applied **SMOTE** on training data only
-* Maintained original distribution in test set for realistic evaluation
+* Fraud transactions represent a very small percentage of total data
+* Applied **SMOTE oversampling** on training data only
+* Preserved original class distribution in the test set for realistic evaluation
 
 ---
 
-## 🤖 Modeling & Evaluation (✅ Task 2 Completed)
+## 🤖 Model Training & Evaluation
 
-### Models Trained
+### Models Implemented
 
-* **Logistic Regression** (baseline)
-* **Random Forest Classifier** (final model)
+* Logistic Regression (baseline)
+* Random Forest Classifier (final model)
 
 ### Evaluation Metrics
 
@@ -121,13 +134,15 @@ fraud-detection/
 * Confusion Matrix
 * Classification Report
 
-### Final Model Performance (Random Forest)
+### Final Model Selection
 
-* Strong fraud detection capability
-* Balanced trade-off between false positives and false negatives
-* Selected due to superior performance and robustness
+The **Random Forest classifier** was selected due to:
 
-The trained model is saved in:
+* Higher recall on fraud cases
+* Better balance between false positives and false negatives
+* Robust performance on imbalanced data
+
+The trained model is saved under:
 
 ```
 models/random_forest_task3.pkl
@@ -135,48 +150,45 @@ models/random_forest_task3.pkl
 
 ---
 
-## 🔍 Model Explainability (Task 3)
+## 🔍 Model Explainability (SHAP)
 
-* Used **SHAP (SHapley Additive exPlanations)** for interpretability
+To ensure transparency and business interpretability:
+
+* Applied **SHAP (SHapley Additive exPlanations)**
 * Generated:
 
   * Global feature importance plots
   * Local explanations for individual predictions
-* Identified top fraud drivers:
+* Identified **top fraud drivers**:
 
   * `time_since_signup`
   * `ip_address`
   * IP range features
-  * Temporal patterns (`day_of_week`, `hour_of_day`)
-
----
-
-## 📈 Key Insights
-
-* Fraud often occurs immediately after signup
-* IP address patterns are strong fraud indicators
-* Temporal behavior significantly influences fraud likelihood
-* Model decisions are interpretable and aligned with business logic
+  * Temporal behavior (`day_of_week`, `hour_of_day`)
 
 ---
 
 ## 💡 Business Recommendations
 
-1. **Additional verification for new accounts**
+1. **Enhanced verification for new users**
+   Transactions occurring shortly after signup should receive additional checks.
 
-   * Transactions within the first hour after signup should trigger review
-
-2. **IP-based risk scoring**
-
-   * Monitor and flag suspicious IP ranges
+2. **IP-based fraud monitoring**
+   High-risk IP ranges should trigger alerts or secondary authentication.
 
 3. **Time-based monitoring**
-
-   * Increase scrutiny during unusual hours or days
+   Transactions during unusual hours or days should be flagged for review.
 
 ---
 
 ## 🛠️ Environment Setup
+
+### Prerequisites
+
+* Python 3.9+
+* Virtual environment recommended
+
+### Installation
 
 ```bash
 pip install -r requirements.txt
@@ -184,14 +196,25 @@ pip install -r requirements.txt
 
 ---
 
-## ✅ Submission Note (Interim & Task 2)
+## ▶️ How to Run the Project
 
-This repository demonstrates:
+1. Place raw datasets in `data/raw/`
+2. Run notebooks in the following order:
 
-* Completed data preprocessing & EDA (**Interim-1**)
-* Successful model training and evaluation (**Task 2**)
-* Model explainability with SHAP (**Task 3**)
+   * `eda-*.ipynb`
+   * `feature-engineering.ipynb`
+   * `modeling.ipynb`
+   * `shap-explainability.ipynb`
 
-📎 **GitHub Repository Link:**
+---
+
+## 📌 Final Submission
+
+✔ End-to-end fraud detection pipeline
+✔ Clean, well-structured repository
+✔ Reproducible environment setup
+✔ Interpretable and actionable results
+
+🔗 **GitHub Repository:**
 👉 *(https://github.com/kal1kidan/fraud-detection-ml-week5-6)*
 
